@@ -130,6 +130,8 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
                         e.printStackTrace()
                     }
 
+                    civDraggedImage.hideControls()
+
                     rlContainer.addView(civDraggedImage)
 
                 }

@@ -4,15 +4,22 @@ import android.content.ClipData
 import android.content.Context
 import android.net.Uri
 import android.os.Build
+import android.os.CountDownTimer
+import android.os.Handler
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
 import android.view.View.OnClickListener
 import android.view.ViewTreeObserver
+import android.view.animation.Animation
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import android.widget.Spinner
 import com.marian.licenta.R
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.AlphaAnimation
+import com.marian.licenta.R.id.ivExpand
+
 
 /**
  * Created by Marian on 19.04.2018.
@@ -63,6 +70,15 @@ class CustomImageView : RelativeLayout {
             }
         })
 
+        iv.setOnClickListener{
+            if (!controlsShown()) {
+                showControls()
+                autoHideControls()
+            } else {
+                hideControls()
+            }
+        }
+
         iv.setOnLongClickListener {
 
             val item = ClipData.Item(Uri.parse(iv.getTag().toString()))
@@ -98,6 +114,60 @@ class CustomImageView : RelativeLayout {
                 })
 
     }
+
+    private fun autoHideControls() {
+        val runnable = Runnable {
+            softHideControls()
+        }
+        val handler = Handler()
+        handler.postDelayed(runnable, 3 * 1000)
+    }
+
+    fun hideControls() {
+        ivExpand.visibility = View.INVISIBLE
+        ivRemove.visibility = View.INVISIBLE
+        ivRotate.visibility = View.INVISIBLE
+    }
+
+    fun softHideControls() {
+        val fadeOut = AlphaAnimation(1f, 0f)
+        fadeOut.interpolator = AccelerateInterpolator() //and this
+        fadeOut.startOffset = 1000
+        fadeOut.setDuration(1000)
+
+        fadeOut.setAnimationListener(object : Animation.AnimationListener {
+            override fun onAnimationRepeat(p0: Animation?) {}
+
+            override fun onAnimationEnd(p0: Animation?) {}
+
+            override fun onAnimationStart(p0: Animation?) {
+                if (controlsShown()) {
+                    hideControls()
+                }
+            }
+        })
+
+        ivExpand.startAnimation(fadeOut)
+        ivRemove.startAnimation(fadeOut)
+        ivRotate.startAnimation(fadeOut)
+
+    }
+
+    fun showControls() {
+
+        ivExpand.visibility = View.VISIBLE
+        ivRemove.visibility = View.VISIBLE
+        ivRotate.visibility = View.VISIBLE
+    }
+
+    fun controlsShown() : Boolean{
+
+        return  (ivExpand.visibility == View.VISIBLE) &&
+                (ivRemove.visibility == View.VISIBLE) &&
+                (ivRotate.visibility == View.VISIBLE)
+
+    }
+
 
 
 }
