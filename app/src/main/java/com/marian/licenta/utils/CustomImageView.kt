@@ -4,21 +4,17 @@ import android.content.ClipData
 import android.content.Context
 import android.net.Uri
 import android.os.Build
-import android.os.CountDownTimer
-import android.os.Handler
+import android.support.v4.content.ContextCompat
 import android.util.AttributeSet
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.OnClickListener
 import android.view.ViewTreeObserver
+import android.view.animation.AccelerateInterpolator
+import android.view.animation.AlphaAnimation
 import android.view.animation.Animation
 import android.widget.ImageView
 import android.widget.RelativeLayout
-import android.widget.Spinner
 import com.marian.licenta.R
-import android.view.animation.AccelerateInterpolator
-import android.view.animation.AlphaAnimation
-import com.marian.licenta.R.id.ivExpand
 
 
 /**
@@ -26,24 +22,17 @@ import com.marian.licenta.R.id.ivExpand
  */
 class CustomImageView : RelativeLayout {
 
-
     lateinit var iv: ImageView
-        private set
-    lateinit var ivRemove: ImageView
-        private set
-    lateinit var ivExpand: ImageView
-        private set
-    lateinit var ivRotate: ImageView
-        private set
-    lateinit var spinnerLayer: Spinner
         private set
 
     lateinit var callbacks: Callbacks
 
+    private var runnable: Runnable? = null
+
+    var layer: Int = 0
+
     interface Callbacks {
         fun onLayoutAttached()
-        fun onDragStarted()
-
     }
 
     constructor(context: Context) : super(context) {
@@ -56,30 +45,24 @@ class CustomImageView : RelativeLayout {
 
     private fun setupView() {
 
-        LayoutInflater.from(context).inflate(R.layout.custom_image_view_with_options, this, true)
+        LayoutInflater.from(context).inflate(R.layout.custom_image_view, this, true)
         iv = findViewById(R.id.iv)
 
-        ivRemove = findViewById(R.id.ivRemove)
-        ivExpand = findViewById(R.id.ivExpand)
-        ivRotate = findViewById(R.id.ivRotate)
-        spinnerLayer = findViewById(R.id.spinnerLayer)
-
-        ivRemove.setOnClickListener(OnClickListener {
-            if (this.parent is RelativeLayout) {
-                (this.parent as RelativeLayout).removeView(this)
-            }
-        })
-
         iv.setOnClickListener{
-            if (!controlsShown()) {
-                showControls()
-                autoHideControls()
+            if (!borderShown()) {
+                showBorder()
+                showOptions()
+                autoHideBorderAndOptions()
             } else {
-                hideControls()
+                hideBorder()
+                removeOptionsLayout()
             }
         }
 
         iv.setOnLongClickListener {
+
+            hideAllBorders()
+            removeOptionsLayout()
 
             val item = ClipData.Item(Uri.parse(iv.getTag().toString()))
 
@@ -93,7 +76,6 @@ class CustomImageView : RelativeLayout {
             }
 
             true
-
         }
 
         viewTreeObserver
@@ -106,6 +88,8 @@ class CustomImageView : RelativeLayout {
                             viewTreeObserver.removeGlobalOnLayoutListener(this)
                         }
 
+                        handler.removeCallbacksAndMessages(null)
+
                         callbacks?.let {
                             callbacks.onLayoutAttached()
                         }
@@ -115,19 +99,112 @@ class CustomImageView : RelativeLayout {
 
     }
 
-    private fun autoHideControls() {
-        val runnable = Runnable {
-            softHideControls()
-        }
-        val handler = Handler()
-        handler.postDelayed(runnable, 3 * 1000)
+    override fun onDetachedFromWindow() {
+        handler.removeCallbacksAndMessages(null)
+
+        super.onDetachedFromWindow()
     }
 
-    fun hideControls() {
-        ivExpand.visibility = View.INVISIBLE
-        ivRemove.visibility = View.INVISIBLE
-        ivRotate.visibility = View.INVISIBLE
+    fun showBorder() {
+        hideAllBorders()
+        iv.background = ContextCompat.getDrawable(context, R.drawable.dotted_margin_background)
     }
+
+    fun showOptions() {
+        removeOptionsLayout()
+        (parent as RelativeLayout).addView(CustomLayerOptionsLayout(context, this@CustomImageView))
+    }
+
+    fun hideBorder() {
+        iv.background = null
+    }
+
+    fun hideAllBorders() {
+        var rlParent = parent as RelativeLayout
+        var child: View
+        for (i in 0 until rlParent.childCount) {
+            child = rlParent.getChildAt(i)
+            if (child is CustomImageView && child.borderShown()) {
+                child.hideBorder()
+            }
+        }
+    }
+
+    fun removeOptionsLayout() {
+        var rlParent = parent as RelativeLayout
+        var child: View?
+        for (i in 0 until rlParent.childCount) {
+            child = rlParent.getChildAt(i)
+            if (child != null && child is CustomLayerOptionsLayout) {
+                rlParent.removeView(child)
+            }
+        }
+    }
+
+    private fun borderShown() : Boolean {
+        return iv.background != null
+    }
+
+    private fun autoHideBorderAndOptions() {
+        handler.removeCallbacksAndMessages(null)
+
+
+        runnable = Runnable {
+            try {
+                hideAllBorders()
+                removeOptionsLayout()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+        handler.postDelayed(runnable, 5 * 1000)
+
+    }
+
+    fun getAllLayersCount(): Int {
+        var layersCount = 0
+        var rlParent = parent as RelativeLayout
+
+        for (i in 0 until rlParent.childCount) {
+            if (rlParent.getChildAt(i) is CustomImageView) {
+                layersCount++
+            }
+        }
+        return layersCount
+    }
+
+    fun setLayerNo(finalLayer: Int) {
+        reorderLayersAfterChanging(finalLayer, layer)
+        layer = finalLayer
+    }
+
+    private fun reorderLayersAfterChanging(finalLayer: Int, initialLayer: Int) {
+        var rlParent = parent as RelativeLayout
+
+        var child: View
+        if (initialLayer < finalLayer) {
+            for (i in 0 until rlParent.childCount) {
+                child = rlParent.getChildAt(i)
+                if (child is CustomImageView) {
+                    if (child.layer in (initialLayer + 1)..finalLayer) {
+                        child.layer--
+                    }
+                }
+            }
+        }
+        if (initialLayer > finalLayer) {
+            for (i in 0 until rlParent.childCount) {
+                child = rlParent.getChildAt(i)
+                if (child is CustomImageView) {
+                    if (child.layer in finalLayer until initialLayer) {
+                        child.layer++
+                    }
+                }
+            }
+        }
+
+    }
+
 
     fun softHideControls() {
         val fadeOut = AlphaAnimation(1f, 0f)
@@ -141,33 +218,12 @@ class CustomImageView : RelativeLayout {
             override fun onAnimationEnd(p0: Animation?) {}
 
             override fun onAnimationStart(p0: Animation?) {
-                if (controlsShown()) {
-                    hideControls()
+                if (borderShown()) {
+                    hideBorder()
+                    removeOptionsLayout()
                 }
             }
         })
-
-        ivExpand.startAnimation(fadeOut)
-        ivRemove.startAnimation(fadeOut)
-        ivRotate.startAnimation(fadeOut)
-
     }
-
-    fun showControls() {
-
-        ivExpand.visibility = View.VISIBLE
-        ivRemove.visibility = View.VISIBLE
-        ivRotate.visibility = View.VISIBLE
-    }
-
-    fun controlsShown() : Boolean{
-
-        return  (ivExpand.visibility == View.VISIBLE) &&
-                (ivRemove.visibility == View.VISIBLE) &&
-                (ivRotate.visibility == View.VISIBLE)
-
-    }
-
-
 
 }

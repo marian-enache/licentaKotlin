@@ -3,6 +3,8 @@
     package="com.marian.licenta">
 
     <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-feature android:name="android.hardware.camera.autofocus" />
 
     <!-- Phone Image Gallery -->
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />

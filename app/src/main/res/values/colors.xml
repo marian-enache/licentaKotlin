@@ -4,6 +4,16 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
 
+    <color name="white">#ffffff</color>
     <color name="white_20_alpha">#32ffffff</color>
+    <color name="white_80_alpha">#ccffffff</color>
+
+    <color name="red_80_alpha">#ccff0000</color>
+    <color name="red_20_alpha">#32ff0000</color>
+
+    <color name="gray_light_20_alpha">#32b4b4b4</color>
+    <color name="gray_light">#b4b4b4</color>
+    <color name="gray_regular">#696969</color>
+    <color name="gray_dark">#333333</color>
 
 </resources>

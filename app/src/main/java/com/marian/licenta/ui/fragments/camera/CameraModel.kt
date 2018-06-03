@@ -1,4 +1,4 @@
-package com.marian.licenta.ui.fragments
+package com.marian.licenta.ui.fragments.camera
 
 import com.marian.licenta.base.mvp.BaseMvpModel;
 

@@ -1,5 +1,6 @@
 package com.marian.licenta.base.mvp
 
+import android.content.Context
 import android.os.Bundle
 import android.support.annotation.LayoutRes
 import android.support.v4.app.Fragment
@@ -64,5 +65,9 @@ abstract class BaseMvpFragment<PRESENTER : BaseMvpContract.MvpPresenter> : Fragm
                 main.hideProgress()
             }
         }
+    }
+
+    override fun getContext(): Context {
+        return super.getContext()
     }
 }

@@ -1,4 +1,8 @@
 <resources>
     <string name="app_name">Licenta</string>
     <string name="title_activity_main2">Main2Activity</string>
+    <string name="cancel">Cancel</string>
+    <string name="ok">Ok</string>
+    <string name="build_scene">Build scene</string>
+    <string name="gallery">Gallery</string>
 </resources>

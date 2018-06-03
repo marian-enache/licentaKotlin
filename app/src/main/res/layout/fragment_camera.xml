@@ -11,23 +11,33 @@
         android:layout_height="match_parent"
         android:visibility="visible" />
 
+    <View
+        android:id="@+id/viewHeader"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_above="@id/rlUiElements"
+        android:layout_alignParentTop="true"
+        android:background="@color/white" />
+
     <RelativeLayout
+        android:id="@+id/rlUiElements"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true">
+        android:layout_height="300dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerInParent="true">
 
         <ImageView
             android:id="@+id/ivListArrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignTop="@+id/rvImages"
-            android:layout_marginBottom="15dp"
+            android:layout_marginBottom="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="15dp"
             android:layout_toLeftOf="@+id/rvImages"
             android:background="@drawable/transparent_white_circle"
             android:padding="5dp"
-            app:srcCompat="@drawable/left_arrow" />
+            app:srcCompat="@drawable/ic_right_arrow" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvImages"
@@ -36,6 +46,28 @@
             android:layout_alignParentRight="true">
 
         </android.support.v7.widget.RecyclerView>
+
     </RelativeLayout>
+
+    <View
+        android:id="@+id/viewFooter"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@id/rlUiElements"
+        android:background="@color/white" />
+
+    <ImageView
+        android:id="@+id/ivTakePicture"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
+        android:background="@drawable/transparent_white_circle"
+        android:padding="10dp"
+        app:srcCompat="@drawable/ic_take_picture" />
+
+
 
 </RelativeLayout>

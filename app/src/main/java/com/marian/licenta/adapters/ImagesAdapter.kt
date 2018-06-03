@@ -1,4 +1,4 @@
-package com.marian.licenta.adapters.images
+package com.marian.licenta.adapters
 
 import android.content.ClipData
 import android.net.Uri
@@ -7,7 +7,7 @@ import android.view.View
 import android.widget.ImageView
 import com.marian.licenta.R
 import com.marian.licenta.base.mvp.BaseMvpAdapter
-import com.marian.licenta.ui.fragments.CameraPresenter
+import com.marian.licenta.ui.fragments.camera.CameraPresenter
 
 /**
  * Created by Marian on 01.04.2018.
@@ -39,7 +39,7 @@ class ImagesAdapter(presenter: CameraPresenter) : BaseMvpAdapter<ImagesAdapter.V
 
     class ViewHolder : BaseMvpAdapter.BaseViewHolder {
 
-        lateinit var callback : ImagesAdapter.Callback
+        lateinit var callback : Callback
 
         var ivImage: ImageView
 
