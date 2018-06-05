@@ -41,17 +41,15 @@ class CustomLayerOptionsLayout : RelativeLayout {
         spinnerLayer.adapter = spinnerAdapter
         spinnerAdapter.notifyDataSetChanged()
 
-        spinnerLayer.setSelection(customImageView.layer - 1)
+        spinnerLayer.setSelection(customImageView.layer - 1, false)
 
         spinnerLayer.onItemSelectedListener =object : AdapterView.OnItemSelectedListener{
             override fun onNothingSelected(p0: AdapterView<*>?) {
-
             }
 
             override fun onItemSelected(parent: AdapterView<*>? , view: View?, position: Int, id: Long) {
                 customImageView.setLayerNo(position + 1)
             }
-
         }
     }
 
@@ -64,6 +62,7 @@ class CustomLayerOptionsLayout : RelativeLayout {
         spinnerLayer = findViewById(R.id.spinnerLayout)
 
         ivDelete.setOnClickListener{v ->
+            customImageView?.reorderLayersAfterDeletion(customImageView!!.layer)
             (customImageView?.parent as RelativeLayout).removeView(customImageView)
             (parent as RelativeLayout).removeView(this)
         }

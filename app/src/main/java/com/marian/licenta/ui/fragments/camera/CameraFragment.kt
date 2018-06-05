@@ -46,6 +46,7 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
 
     private var cameraId: Int = Camera.CameraInfo.CAMERA_FACING_BACK
 
+    private lateinit var rlMain: RelativeLayout
     private lateinit var ivListArrow: ImageView
     private lateinit var rvImages: RecyclerView
     private lateinit var surfaceView: SurfaceView
@@ -76,6 +77,7 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
 
         pictureTaken = false
 
+        rlMain = view?.findViewById(R.id.rlMain)!!
         ivListArrow = view?.findViewById(R.id.ivListArrow)!!
         rvImages = view?.findViewById(R.id.rvImages)!!
         surfaceView = view?.findViewById(R.id.surfaceView)!!
@@ -123,12 +125,6 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
                 DragEvent.ACTION_DROP -> {
                     ivListArrow.visibility = View.VISIBLE
                     ViewUtils.showFromRight(rvImages)
-
-                    activity?.let {
-                        if (activity is MainActivity) {
-                            (activity as MainActivity).showMenuButton()
-                        }
-                    }
 
                     val item = dragEvent.clipData.getItemAt(1)
                     val uri = item.uri
@@ -248,7 +244,7 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
 
         llAcceptance = sceneAcceptanceInit(context)
 
-        rlContainer.addView(llAcceptance)
+        rlMain.addView(llAcceptance)
 
     }
 
@@ -262,7 +258,7 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
         ivTakePicture.visibility = View.VISIBLE
 
         llAcceptance?.let {
-            rlContainer.removeView(llAcceptance)
+            rlMain.removeView(llAcceptance)
         }
 
     }
@@ -340,12 +336,6 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
     private fun onDragStartedVisibilitiesHandler() {
         ivListArrow.visibility = View.GONE
         ViewUtils.hideToRight(rvImages)
-
-        activity?.let {
-            if (activity is MainActivity) {
-                (activity as MainActivity).hideMenuButton()
-            }
-        }
     }
 
     /*

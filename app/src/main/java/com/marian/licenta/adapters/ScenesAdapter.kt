@@ -12,6 +12,7 @@ import android.widget.RelativeLayout
 import com.marian.licenta.App
 import com.marian.licenta.R
 import com.marian.licenta.base.mvp.BaseMvpAdapter
+import com.marian.licenta.extensions.goToSceneActivity
 import com.marian.licenta.room.models.Scene
 import com.marian.licenta.ui.fragments.gallery.GalleryPresenter
 import org.jetbrains.anko.runOnUiThread
@@ -113,17 +114,10 @@ class ScenesAdapter(presenter: GalleryPresenter) : BaseMvpAdapter<ScenesAdapter.
 
             }
 
-
-//            ivImage.setTag(id)
-//            ivImage.setOnLongClickListener {
-//
-//                callback?.let {
-//                    callback.onClick()
-//                }
-//            }
-
+            itemView.setOnClickListener {
+                itemView.context.goToSceneActivity(scene)
+            }
         }
-
 
     }
 

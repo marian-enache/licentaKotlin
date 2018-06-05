@@ -15,6 +15,7 @@ import android.view.animation.Animation
 import android.widget.ImageView
 import android.widget.RelativeLayout
 import com.marian.licenta.R
+import java.util.*
 
 
 /**
@@ -71,9 +72,12 @@ class CustomImageView : RelativeLayout {
             val shadowBuilder = View.DragShadowBuilder(iv)
             iv.startDrag(data, shadowBuilder, iv, 0)
 
+            reorderLayersAfterDeletion(layer)
+
             if (this@CustomImageView.parent is RelativeLayout) {
                 (this@CustomImageView.parent as RelativeLayout).removeView(this@CustomImageView)
             }
+
 
             true
         }
@@ -112,7 +116,7 @@ class CustomImageView : RelativeLayout {
 
     fun showOptions() {
         removeOptionsLayout()
-        (parent as RelativeLayout).addView(CustomLayerOptionsLayout(context, this@CustomImageView))
+        (parent.parent as RelativeLayout).addView(CustomLayerOptionsLayout(context, this@CustomImageView))
     }
 
     fun hideBorder() {
@@ -131,7 +135,7 @@ class CustomImageView : RelativeLayout {
     }
 
     fun removeOptionsLayout() {
-        var rlParent = parent as RelativeLayout
+        var rlParent = parent.parent as RelativeLayout
         var child: View?
         for (i in 0 until rlParent.childCount) {
             child = rlParent.getChildAt(i)
@@ -176,6 +180,47 @@ class CustomImageView : RelativeLayout {
     fun setLayerNo(finalLayer: Int) {
         reorderLayersAfterChanging(finalLayer, layer)
         layer = finalLayer
+        refreshLayersVisibilitiesFromLayer(finalLayer)
+    }
+
+    fun reorderLayersAfterDeletion(deletedLayer: Int) {
+        var rlParent = parent as RelativeLayout
+
+        var child: View
+        for (i in 0 until rlParent.childCount) {
+            child = rlParent.getChildAt(i)
+            if (child is CustomImageView) {
+                if (child.layer > deletedLayer) {
+                    child.layer--
+                }
+            }
+        }
+
+    }
+
+    fun refreshLayersVisibilitiesFromLayer(addedLayer: Int) {
+        var views: ArrayList<CustomImageView> = ArrayList()
+
+        var rlParent = parent as RelativeLayout
+
+        var child: View
+        for (i in 0 until rlParent.childCount) {
+            child = rlParent.getChildAt(i)
+            if (child is CustomImageView) {
+                if (child.layer >= addedLayer) {
+                    views.add(child)
+                }
+            }
+        }
+
+        if(!views.isEmpty()) {
+            views.sortWith(Comparator { object1, object2 -> object1.layer.compareTo(object2.layer) })
+
+            for (civ in views) {
+                civ.bringToFront()
+            }
+        }
+
     }
 
     private fun reorderLayersAfterChanging(finalLayer: Int, initialLayer: Int) {

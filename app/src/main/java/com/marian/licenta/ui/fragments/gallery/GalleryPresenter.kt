@@ -6,7 +6,6 @@ import com.marian.licenta.base.mvp.BaseMvpPresenter
 import com.marian.licenta.room.AppDatabase
 import com.marian.licenta.room.DbWorkerThread
 import com.marian.licenta.room.models.Scene
-import com.marian.licenta.room.pojos.SceneView
 import org.jetbrains.anko.runOnUiThread
 
 
@@ -35,7 +34,7 @@ class GalleryPresenter(view: GalleryContract.View) : BaseMvpPresenter<GalleryCon
         var scenes : ArrayList<Scene> = ArrayList()
 
         val task = Runnable {
-            var sceneViews = appDatabase?.sceneDao()?.getSceneViews() ?: ArrayList<SceneView>()
+            var sceneViews = appDatabase?.sceneDao()?.getSceneViews() ?: ArrayList()
             for (sceneView in sceneViews) {
                 var scene = sceneView.scene
                 scene?.layers = sceneView.layers
