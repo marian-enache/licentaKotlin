@@ -37,8 +37,11 @@ import java.io.FileNotFoundException
 class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContract.View {
 
     companion object {
+
+        @JvmStatic
         open val TAG: String = CameraFragment::class.java.simpleName
 
+        @JvmStatic
         private val FOCUS_AREA_SIZE = 300
 
         open fun newInstance(): CameraFragment = CameraFragment()

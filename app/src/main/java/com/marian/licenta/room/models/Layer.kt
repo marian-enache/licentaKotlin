@@ -3,6 +3,7 @@ package com.marian.licenta.room.models
 import android.arch.persistence.room.*
 import android.os.Parcel
 import android.os.Parcelable
+import com.marian.licenta.extensions.createParcel
 
 /**
  * Created by Marian on 28.05.2018.
@@ -25,25 +26,26 @@ class Layer (@PrimaryKey(autoGenerate = true) var id : Int?,
              @ColumnInfo(name = "margin_top") var marginTop: Int,
              @ColumnInfo(name = "margin_left") var marginLeft: Int,
              @ColumnInfo var width: Int,
-             @ColumnInfo var height: Int): Parcelable {
+             @ColumnInfo var height: Int
+): Parcelable {
 
     constructor(parcel: Parcel) : this(
-            parcel.readValue(Int::class.java.classLoader) as? Int,
-            parcel.readValue(Long::class.java.classLoader) as? Long,
+            parcel.readInt(),
+            parcel.readLong(),
             parcel.readString(),
             parcel.readInt(),
             parcel.readInt(),
             parcel.readInt(),
             parcel.readInt(),
-            parcel.readInt()) {
-    }
+            parcel.readInt())
+
 
     @Ignore
     constructor() : this(null, null, null, 0, 0, 0, 0, 0)
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeValue(id)
-        parcel.writeValue(sceneId)
+        parcel.writeInt(id ?: 0)
+        parcel.writeLong(sceneId ?: 0)
         parcel.writeString(source)
         parcel.writeInt(layerNo)
         parcel.writeInt(marginTop)
@@ -56,13 +58,9 @@ class Layer (@PrimaryKey(autoGenerate = true) var id : Int?,
         return 0
     }
 
-    companion object CREATOR : Parcelable.Creator<Layer> {
-        override fun createFromParcel(parcel: Parcel): Layer {
-            return Layer(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Layer?> {
-            return arrayOfNulls(size)
-        }
+    companion object {
+        @JvmField
+        @Suppress("unused")
+        val CREATOR = createParcel { Layer(it) }
     }
 }

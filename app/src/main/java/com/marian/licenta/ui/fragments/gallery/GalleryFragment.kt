@@ -10,9 +10,12 @@ import com.marian.licenta.base.mvp.BaseMvpFragment
 import com.marian.licenta.ui.activities.main.MainActivity
 
 class GalleryFragment : BaseMvpFragment<GalleryContract.Presenter>(), GalleryContract.View {
+
     companion object {
 
+        @JvmStatic
         open val TAG: String = GalleryFragment::class.java.simpleName
+
         open fun newInstance(): GalleryFragment = GalleryFragment()
 
     }
