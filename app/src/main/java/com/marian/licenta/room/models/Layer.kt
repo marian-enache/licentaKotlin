@@ -3,6 +3,8 @@ package com.marian.licenta.room.models
 import android.arch.persistence.room.*
 import android.os.Parcel
 import android.os.Parcelable
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 import com.marian.licenta.extensions.createParcel
 
 /**
@@ -19,39 +21,39 @@ import com.marian.licenta.extensions.createParcel
                              )
         )
 
-class Layer (@PrimaryKey(autoGenerate = true) var id : Int?,
+class Layer (@Expose @PrimaryKey(autoGenerate = true) var id : Int?,
              @ColumnInfo(name = "scene_id") var sceneId : Long?,
-             @ColumnInfo var source : String?,
              @ColumnInfo(name = "layer_number") var layerNo : Int,
              @ColumnInfo(name = "margin_top") var marginTop: Int,
              @ColumnInfo(name = "margin_left") var marginLeft: Int,
              @ColumnInfo var width: Int,
-             @ColumnInfo var height: Int
+             @ColumnInfo var height: Int,
+             @Expose @SerializedName("webformatURL") @ColumnInfo(name = "image_url") var previewURL: String
 ): Parcelable {
 
     constructor(parcel: Parcel) : this(
             parcel.readInt(),
             parcel.readLong(),
-            parcel.readString(),
             parcel.readInt(),
             parcel.readInt(),
             parcel.readInt(),
             parcel.readInt(),
-            parcel.readInt())
+            parcel.readInt(),
+            parcel.readString())
 
 
     @Ignore
-    constructor() : this(null, null, null, 0, 0, 0, 0, 0)
+    constructor() : this(null, null, 0, 0, 0, 0, 0, "")
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeInt(id ?: 0)
         parcel.writeLong(sceneId ?: 0)
-        parcel.writeString(source)
         parcel.writeInt(layerNo)
         parcel.writeInt(marginTop)
         parcel.writeInt(marginLeft)
         parcel.writeInt(width)
         parcel.writeInt(height)
+        parcel.writeString(previewURL)
     }
 
     override fun describeContents(): Int {

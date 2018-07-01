@@ -43,20 +43,32 @@
             android:id="@+id/ivListArrow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/rvImages"
             android:layout_marginBottom="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="15dp"
-            android:layout_toLeftOf="@+id/rvImages"
+            android:layout_toLeftOf="@+id/ivSearch"
             android:background="@drawable/transparent_white_circle"
             android:padding="5dp"
             app:srcCompat="@drawable/ic_right_arrow" />
+
+        <ImageView
+            android:id="@+id/ivSearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginBottom="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="15dp"
+            android:background="@drawable/transparent_white_circle"
+            android:padding="5dp"
+            app:srcCompat="@drawable/ic_search" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rvImages"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentRight="true">
+            android:layout_alignParentRight="true"
+            android:layout_below="@+id/ivSearch">
 
         </android.support.v7.widget.RecyclerView>
 

@@ -7,8 +7,9 @@
     <ImageView
         android:id="@+id/iv"
         android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:background="@drawable/dotted_margin_background"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:background="@drawable/red_dotted_margin_background"
         android:padding="3dp"
         app:srcCompat="@drawable/girl" />
 

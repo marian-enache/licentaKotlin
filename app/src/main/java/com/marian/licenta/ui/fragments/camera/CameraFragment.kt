@@ -6,7 +6,6 @@ import android.graphics.Canvas
 import android.hardware.Camera
 import android.os.Build
 import android.support.annotation.LayoutRes
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.util.Log
@@ -26,12 +25,10 @@ import com.marian.licenta.room.models.Layer
 import com.marian.licenta.ui.activities.main.MainActivity
 import com.marian.licenta.utils.CustomImageView
 import com.marian.licenta.utils.CustomSceneAcceptanceOptions
+import com.marian.licenta.utils.Utils
 import com.marian.licenta.utils.ViewUtils
+import com.squareup.picasso.Picasso
 import java.io.FileNotFoundException
-
-
-
-
 
 
 class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContract.View {
@@ -44,6 +41,7 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
         @JvmStatic
         private val FOCUS_AREA_SIZE = 300
 
+        @JvmStatic
         open fun newInstance(): CameraFragment = CameraFragment()
     }
 
@@ -51,6 +49,7 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
 
     private lateinit var rlMain: RelativeLayout
     private lateinit var ivListArrow: ImageView
+    private lateinit var ivSearch: ImageView
     private lateinit var rvImages: RecyclerView
     private lateinit var surfaceView: SurfaceView
     private lateinit var surfaceHolder: SurfaceHolder
@@ -78,20 +77,23 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
 
     override fun initViews(view: View?) {
 
+        getPresenter().adapterItemsListInit()
+
         pictureTaken = false
 
         rlMain = view?.findViewById(R.id.rlMain)!!
-        ivListArrow = view?.findViewById(R.id.ivListArrow)!!
-        rvImages = view?.findViewById(R.id.rvImages)!!
-        surfaceView = view?.findViewById(R.id.surfaceView)!!
-        rlContainer = view?.findViewById(R.id.rlContainer)!!
-        rlUiElements = view?.findViewById(R.id.rlUiElements)!!
-        ivTakePicture = view?.findViewById(R.id.ivTakePicture)!!
-        surfaceHolder = surfaceView?.holder
-        surfaceHolder?.addCallback(surfaceHolderCallback)
+        ivListArrow = view.findViewById(R.id.ivListArrow)!!
+        ivSearch= view.findViewById(R.id.ivSearch)!!
+        rvImages = view.findViewById(R.id.rvImages)!!
+        surfaceView = view.findViewById(R.id.surfaceView)!!
+        rlContainer = view.findViewById(R.id.rlContainer)!!
+        rlUiElements = view.findViewById(R.id.rlUiElements)!!
+        ivTakePicture = view.findViewById(R.id.ivTakePicture)!!
+        surfaceHolder = surfaceView.holder
+        surfaceHolder.addCallback(surfaceHolderCallback)
 
-        viewHeader = view?.findViewById(R.id.viewHeader)
-        viewFooter = view?.findViewById(R.id.viewFooter)
+        viewHeader = view.findViewById(R.id.viewHeader)
+        viewFooter = view.findViewById(R.id.viewFooter)
 
         rvImages.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         imagesAdapter = ImagesAdapter(getPresenter() as CameraPresenter)
@@ -137,18 +139,22 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
 
                     civDraggedImage.callbacks = object : CustomImageView.Callbacks {
                         override fun onLayoutAttached() {
-                            val width = civDraggedImage.getMeasuredWidth()
-                            val height = civDraggedImage.getMeasuredHeight()
+                            val width = civDraggedImage.measuredWidth
+                            val height = civDraggedImage.measuredHeight
 
                             var params = civDraggedImage.layoutParams as RelativeLayout.LayoutParams
 
                             params.leftMargin = dragEvent.x.toInt() - width / 2
-                            params.topMargin = dragEvent.y.toInt() - height / 2
+                            params.topMargin = dragEvent.y.toInt() - height / 2 - Utils.convertDpToPixel(15f, context).toInt()
                             civDraggedImage.layoutParams = params
 
                             try {
-                                civDraggedImage.iv.setImageDrawable(ContextCompat.getDrawable(context, uri.toString().toInt()))
+
+                                Picasso.get()
+                                        .load(uri.toString())
+                                        .into(civDraggedImage.iv)
                                 civDraggedImage.iv.tag = uri.toString()
+
                             } catch (e: FileNotFoundException) {
                                 e.printStackTrace()
                             }
@@ -179,9 +185,8 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
                 } else {
                     surfaceView.viewTreeObserver.removeGlobalOnLayoutListener(this)
                 }
-                 val surfaceViewViewTreeObserver = surfaceView.viewTreeObserver
 
-                camera?.let{
+                camera?.let {
 
                     val cameraDimensionsRatio: Double = camera!!.parameters.pictureSize.width.toDouble() / camera!!.parameters.pictureSize.height.toDouble()
 
@@ -196,7 +201,7 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
             }
         })
 
-        rlUiElements.addOnLayoutChangeListener{ view: View, i: Int, i1: Int, i2: Int, i3: Int, i4: Int, i5: Int, i6: Int, i7: Int ->
+        rlUiElements.addOnLayoutChangeListener { view: View, i: Int, i1: Int, i2: Int, i3: Int, i4: Int, i5: Int, i6: Int, i7: Int ->
             App.instance.surfaceViewWidth = rlUiElements.measuredWidth
             App.instance.surfaceViewHeight = rlUiElements.measuredHeight
         }
@@ -206,7 +211,6 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
             pictureTaken = true
             showProgress()
             takeImage()
-
         }
     }
 
@@ -234,6 +238,10 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
             }
         }
         return layersCount
+    }
+
+    override fun notifyAdaptorItemsChange() {
+        imagesAdapter.notifyDataSetChanged()
     }
 
     private fun photoTakenVisibilities() {
@@ -320,11 +328,11 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
         var layer = Layer()
 
         layer.layerNo = civ.layer
-        layer.source = civ.iv.tag.toString()
         layer.marginLeft = (civ.layoutParams as RelativeLayout.LayoutParams).leftMargin
         layer.marginTop = (civ.layoutParams as RelativeLayout.LayoutParams).topMargin - viewHeader.measuredHeight
         layer.width = civ.measuredWidth
         layer.height = civ.measuredHeight
+        layer.previewURL = civ.iv.tag.toString()
 
         return layer
 
@@ -338,6 +346,7 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
 
     private fun onDragStartedVisibilitiesHandler() {
         ivListArrow.visibility = View.GONE
+        ivSearch.visibility = View.GONE
         ViewUtils.hideToRight(rvImages)
     }
 
@@ -375,7 +384,6 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
                 result = false
                 releaseCameraAndPreview()
             }
-
         }
 
         return result
@@ -415,7 +423,6 @@ class CameraFragment : BaseMvpFragment<CameraContract.Presenter>(), CameraContra
 
         })
     }
-
 
     /* Camera related methods */
 

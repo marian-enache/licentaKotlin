@@ -30,7 +30,7 @@ abstract class AppDatabase : RoomDatabase() {
                     if (INSTANCE == null) {
                         // Create database here
                         INSTANCE = Room.databaseBuilder(context,
-                                AppDatabase::class.java!!, "wallpapers-db")
+                                AppDatabase::class.java, "wallpapers-db")
                                 .build()
                     }
                 }

@@ -9,17 +9,24 @@
     card_view:cardCornerRadius="4dp"
     card_view:cardUseCompatPadding="true">
 
-    <ImageView
-        android:id="@+id/ivBackground"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:adjustViewBounds="true"
-        android:scaleType="centerCrop" />
-
     <RelativeLayout
-        android:id="@+id/rlScene"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <ImageView
+            android:id="@+id/ivBackground"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:adjustViewBounds="true"
+            android:scaleType="centerCrop" />
+
+        <RelativeLayout
+            android:id="@+id/rlScene"
+            android:layout_alignBaseline="@id/ivBackground"
+            android:layout_alignTop="@id/ivBackground"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </RelativeLayout>
     </RelativeLayout>
 </android.support.v7.widget.CardView>

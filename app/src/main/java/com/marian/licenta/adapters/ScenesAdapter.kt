@@ -3,7 +3,6 @@ package com.marian.licenta.adapters
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Handler
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.CardView
 import android.view.View
 import android.view.ViewTreeObserver
@@ -15,6 +14,7 @@ import com.marian.licenta.base.mvp.BaseMvpAdapter
 import com.marian.licenta.extensions.goToSceneActivity
 import com.marian.licenta.room.models.Scene
 import com.marian.licenta.ui.fragments.gallery.GalleryPresenter
+import com.squareup.picasso.Picasso
 import org.jetbrains.anko.runOnUiThread
 
 
@@ -103,7 +103,9 @@ class ScenesAdapter(presenter: GalleryPresenter) : BaseMvpAdapter<ScenesAdapter.
 
                                     ivLayer.layoutParams = ivParams
 
-                                    ivLayer.setImageDrawable(ContextCompat.getDrawable(itemView.context, layer.source!!.toInt()))
+                                    Picasso.get()
+                                            .load(layer.previewURL)
+                                            .into(ivLayer)
                                 }
                             })
 

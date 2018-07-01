@@ -11,7 +11,11 @@ import android.view.ViewGroup
 /**
  * Created by Marian on 26.03.2018.
  */
-abstract class BaseMvpAdapter<HOLDER : BaseMvpAdapter.BaseViewHolder, PRESENTER : BaseMvpContract.MvpAdapterPresenter<HOLDER>>(private var  presenter : PRESENTER) : RecyclerView.Adapter<HOLDER>(), BaseMvpContract.MvpAdapterView{
+abstract class BaseMvpAdapter<HOLDER : BaseMvpAdapter.BaseViewHolder,
+                                out PRESENTER : BaseMvpContract.MvpAdapterPresenter<HOLDER>
+                                >(private var  presenter : PRESENTER)
+        : RecyclerView.Adapter<HOLDER>(),
+            BaseMvpContract.MvpAdapterView{
 
     private lateinit var context: Context
 

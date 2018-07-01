@@ -16,15 +16,11 @@ interface BaseMvpContract {
     interface MvpPresenter {
         fun onBind()
         fun onDetachView()
-
-
     }
 
-    interface MvpAdapterView {
+    interface MvpAdapterView
 
-    }
-
-    interface MvpAdapterPresenter<HOLDER : BaseMvpAdapter.BaseViewHolder> {
+    interface MvpAdapterPresenter<in HOLDER : BaseMvpAdapter.BaseViewHolder> {
         fun onBindAdapterItems(position : Int, holder : HOLDER)
         fun getItemCount() : Int
     }

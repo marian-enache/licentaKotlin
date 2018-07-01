@@ -11,10 +11,10 @@ import org.jetbrains.anko.runOnUiThread
 
 class GalleryPresenter(view: GalleryContract.View) : BaseMvpPresenter<GalleryContract.View, GalleryModel>(view),
         GalleryContract.Presenter,
-        BaseMvpContract.MvpAdapterPresenter<ScenesAdapter.ViewHolder>{
+        BaseMvpContract.MvpAdapterPresenter<ScenesAdapter.ViewHolder> {
 
 
-    private  var dbWorkerThread: DbWorkerThread? = null
+    private var dbWorkerThread: DbWorkerThread? = null
 
     private var appDatabase: AppDatabase? = null
 
@@ -27,11 +27,24 @@ class GalleryPresenter(view: GalleryContract.View) : BaseMvpPresenter<GalleryCon
 
         dbWorkerThread = DbWorkerThread("dbWorkerThread")
         dbWorkerThread?.start()
-        adapterItemsListInit()
+
+//        adapterItemsListInit()
+
+//        val call = RetroClient.apiService.getLayersByWord(Constants.PIXABAY_API_KEY, "png")
+//
+//        call.enqueue(object : Callback<ApiResponse> {
+//            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+//                Log.d("pnFailure", response.body().toString())
+//            }
+//
+//            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+//                Log.d("pnFailure", t.message)
+//            }
+//        })
     }
 
     override fun adapterItemsListInit() {
-        var scenes : ArrayList<Scene> = ArrayList()
+        var scenes: ArrayList<Scene> = ArrayList()
 
         val task = Runnable {
             var sceneViews = appDatabase?.sceneDao()?.getSceneViews() ?: ArrayList()
@@ -44,6 +57,7 @@ class GalleryPresenter(view: GalleryContract.View) : BaseMvpPresenter<GalleryCon
                     }
                 }
             }
+
             getModel().setScenesList(scenes)
 
             getView().getContext().runOnUiThread {
@@ -55,9 +69,10 @@ class GalleryPresenter(view: GalleryContract.View) : BaseMvpPresenter<GalleryCon
     }
 
     override fun onBindAdapterItems(position: Int, holder: ScenesAdapter.ViewHolder) {
-        var scene : Scene = getModel().getscenesList().get(position)
+        var scene: Scene = getModel().getscenesList()[position]
 
-        holder.setFields(scene)    }
+        holder.setFields(scene)
+    }
 
     override fun getItemCount(): Int {
         return getModel().getscenesList().size

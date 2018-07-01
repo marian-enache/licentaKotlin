@@ -2,17 +2,18 @@ package com.marian.licenta.adapters
 
 import android.content.ClipData
 import android.net.Uri
-import android.support.v4.content.ContextCompat
 import android.view.View
 import android.widget.ImageView
 import com.marian.licenta.R
 import com.marian.licenta.base.mvp.BaseMvpAdapter
 import com.marian.licenta.ui.fragments.camera.CameraPresenter
+import com.squareup.picasso.Picasso
 
 /**
  * Created by Marian on 01.04.2018.
  */
-class ImagesAdapter(presenter: CameraPresenter) : BaseMvpAdapter<ImagesAdapter.ViewHolder, CameraPresenter>(presenter) {
+class ImagesAdapter(presenter: CameraPresenter)
+    : BaseMvpAdapter<ImagesAdapter.ViewHolder, CameraPresenter>(presenter) {
 
 
     lateinit var callback : Callback
@@ -47,16 +48,20 @@ class ImagesAdapter(presenter: CameraPresenter) : BaseMvpAdapter<ImagesAdapter.V
             ivImage = itemView.findViewById(R.id.ivImage)
         }
 
-        fun setFields(id: Int) {
-            ivImage.setImageDrawable(ContextCompat.getDrawable(itemView.context, id))
-            ivImage.setTag(id)
+        fun setFields(imagePath: String) {
+
+            Picasso.get()
+                    .load(imagePath)
+                    .into(ivImage)
+
+
             ivImage.setOnLongClickListener {
 
                 callback?.let {
                     callback.onDragStarted()
                 }
 
-                val item = ClipData.Item(Uri.parse(ivImage.getTag().toString()))
+                val item = ClipData.Item(Uri.parse(imagePath))
 
                 val data = ClipData.newPlainText("", "")
                 data.addItem(item)

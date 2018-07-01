@@ -5,16 +5,22 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.provider.MediaStore
-import com.marian.licenta.R
+import android.util.Log
 import com.marian.licenta.adapters.ImagesAdapter
 import com.marian.licenta.base.mvp.BaseMvpContract
 import com.marian.licenta.base.mvp.BaseMvpPresenter
+import com.marian.licenta.retrofit.ApiResponse
+import com.marian.licenta.retrofit.RetroClient
 import com.marian.licenta.room.AppDatabase
 import com.marian.licenta.room.DbWorkerThread
 import com.marian.licenta.room.models.Layer
 import com.marian.licenta.room.models.Scene
+import com.marian.licenta.utils.Constants
 import com.marian.licenta.utils.GeneralAsyncTask
 import com.marian.licenta.utils.Utils
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
@@ -38,7 +44,7 @@ class CameraPresenter(view: CameraContract.View) : BaseMvpPresenter<CameraContra
 
 
     override fun onBindAdapterItems(position: Int, holder: ImagesAdapter.ViewHolder) {
-        var image : Int = getModel().getImagesList().get(position)
+        var image = getModel().getImagesList().get(position)
 
         holder.setFields(image)
     }
@@ -52,21 +58,36 @@ class CameraPresenter(view: CameraContract.View) : BaseMvpPresenter<CameraContra
     }
 
     override fun onBind() {
-        adapterItemsListInit()
         dbWorkerThread = DbWorkerThread("dbWorkerThread")
         dbWorkerThread.start()
     }
 
-    private fun adapterItemsListInit() {
-        var images : ArrayList<Int> = ArrayList()
-        images.add(R.drawable.cat)
-        images.add(R.drawable.dog)
-        images.add(R.drawable.girl)
-        images.add(R.drawable.hot_dog)
-        images.add(R.drawable.stand)
-        images.add(R.drawable.husky)
+    override fun adapterItemsListInit() {
 
-        getModel().getImagesList().addAll(images)
+        var images : ArrayList<String> = ArrayList()
+        val call = RetroClient.apiService.getLayersByWord(Constants.PIXABAY_API_KEY, "png")
+
+        call.enqueue(object : Callback<ApiResponse> {
+            override fun onResponse(call: Call<ApiResponse>, response: Response<ApiResponse>) {
+                Log.d("pnFailure", response.body().toString())
+                var hits = response.body()?.hits
+
+                hits?.let {
+                    for (hit in hits) {
+                        images.add(hit.previewURL)
+                    }
+                }
+
+                getModel().getImagesList().addAll(images)
+                getView().notifyAdaptorItemsChange()
+
+            }
+
+            override fun onFailure(call: Call<ApiResponse>, t: Throwable) {
+                Log.d("pnFailure", t.message)
+            }
+        })
+
     }
 
     override fun storeScene(name: String, layersCount: Int, layersList: MutableList<Layer>) {
@@ -99,6 +120,7 @@ class CameraPresenter(view: CameraContract.View) : BaseMvpPresenter<CameraContra
             override fun onPostExecute() {
                 hideProgress()
                 getView().afterPictureTaken()
+                System.gc()
             }
         }).execute()
     }

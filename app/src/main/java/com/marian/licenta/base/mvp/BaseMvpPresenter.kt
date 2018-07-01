@@ -3,11 +3,11 @@ package com.marian.licenta.base.mvp
 /**
  * Created by Marian on 20.03.2018.
  */
-open abstract class BaseMvpPresenter<VIEW : BaseMvpContract.MvpView, MODEL : BaseMvpModel>() : BaseMvpContract.MvpPresenter {
+open abstract class BaseMvpPresenter<VIEW : BaseMvpContract.MvpView, MODEL : BaseMvpModel>()
+    : BaseMvpContract.MvpPresenter {
 
     private lateinit var view : VIEW
     private lateinit var model : MODEL
-
 
     constructor(view: VIEW) : this() {
         this.view = view

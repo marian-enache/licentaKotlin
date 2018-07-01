@@ -14,7 +14,7 @@ class MainPresenter(view: MainContract.View) : BaseMvpPresenter<MainContract.Vie
     }
 
     override fun onDetachView() {
-        // TODO
+        System.gc()
     }
 
 }

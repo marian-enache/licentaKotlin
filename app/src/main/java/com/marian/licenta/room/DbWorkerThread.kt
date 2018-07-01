@@ -6,7 +6,8 @@ import android.os.HandlerThread
 /**
  * Created by Marian on 29.05.2018.
  */
-class DbWorkerThread(threadName: String) : HandlerThread(threadName) {
+class DbWorkerThread(threadName: String)
+    : HandlerThread(threadName) {
 
     private var mWorkerHandler: Handler? = null
 

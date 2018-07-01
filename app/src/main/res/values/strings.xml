@@ -5,4 +5,6 @@
     <string name="ok">Ok</string>
     <string name="build_scene">Build scene</string>
     <string name="gallery">Gallery</string>
+    <string name="wallpaper_description">Wallpaper description</string>
+    <string name="set_wallpaper">Seteaza wallpaper</string>
 </resources>

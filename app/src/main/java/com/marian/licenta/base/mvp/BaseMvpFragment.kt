@@ -45,8 +45,8 @@ abstract class BaseMvpFragment<PRESENTER : BaseMvpContract.MvpPresenter> : Fragm
     }
 
     override fun onDestroyView() {
-        super.onDestroyView()
         presenter.onDetachView()
+        super.onDestroyView()
     }
 
     override fun showProgress() {

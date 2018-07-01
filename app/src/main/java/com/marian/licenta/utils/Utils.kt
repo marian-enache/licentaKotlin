@@ -1,6 +1,8 @@
 package com.marian.licenta.utils
 
+import android.content.Context
 import android.os.Environment
+import android.util.DisplayMetrics
 import android.util.Log
 import java.io.File
 import java.io.IOException
@@ -40,5 +42,12 @@ class Utils {
             }
             return imageFile
         }
+
+        fun convertDpToPixel(dp: Float, context: Context): Float {
+            val resources = context.resources
+            val metrics = resources.displayMetrics
+            return dp * (metrics.densityDpi.toFloat() / DisplayMetrics.DENSITY_DEFAULT)
+        }
+
     }
 }

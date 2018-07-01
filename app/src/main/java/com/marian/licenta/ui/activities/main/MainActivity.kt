@@ -1,8 +1,11 @@
 package com.marian.licenta.ui.activities.main
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.annotation.IdRes
 import android.support.annotation.LayoutRes
+import android.support.v4.app.ActivityCompat
 import android.support.v4.app.Fragment
 import android.support.v4.content.ContextCompat
 import android.support.v4.view.GravityCompat
@@ -16,6 +19,7 @@ import com.marian.licenta.R
 import com.marian.licenta.base.mvp.BaseMvpActivity
 import com.marian.licenta.ui.fragments.camera.CameraFragment
 import com.marian.licenta.ui.fragments.gallery.GalleryFragment
+import com.marian.licenta.utils.Constants
 
 class MainActivity : BaseMvpActivity<MainContract.Presenter>(), MainContract.View, View.OnClickListener {
 
@@ -33,20 +37,44 @@ class MainActivity : BaseMvpActivity<MainContract.Presenter>(), MainContract.Vie
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        askForPermissions()
 
     }
 
     @LayoutRes
-    override internal fun bindLayout(): Int {
+    override fun bindLayout(): Int {
         return R.layout.activity_main
     }
 
     @IdRes
-    override internal fun bindLoadingScreen(): Int {
+    override fun bindLoadingScreen(): Int {
         return R.id.rlLoading
     }
 
-    override internal fun initViews() {
+    private fun permissionsNotGranted() =
+            (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED)
+                    || (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED)
+
+    private fun askForPermissions() {
+
+        if (permissionsNotGranted()) {
+
+            var permissionsNeeded = ArrayList<String>()
+
+            permissionsNeeded.add(Manifest.permission.CAMERA)
+            permissionsNeeded.add(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
+            if (!permissionsNeeded.isEmpty()) {
+                ActivityCompat.requestPermissions(this,
+                        permissionsNeeded.toTypedArray(),
+                        Constants.PERMISSIONS_CODE)
+            }
+        }
+
+    }
+
+
+    override fun initViews() {
         ivMenu = findViewById(R.id.ivMenu)
         ivMenu.setOnClickListener(this)
         dlDrawer = findViewById(R.id.dlDrawer)
@@ -56,6 +84,7 @@ class MainActivity : BaseMvpActivity<MainContract.Presenter>(), MainContract.Vie
         rlBuild.setOnClickListener(this)
         rlGallery = findViewById(R.id.rlGallery)
         rlGallery.setOnClickListener(this)
+
 
         //drawer.ul nu se deschidea peste surfaceView
         dlDrawer.addDrawerListener(object : DrawerLayout.DrawerListener {
@@ -76,6 +105,14 @@ class MainActivity : BaseMvpActivity<MainContract.Presenter>(), MainContract.Vie
             }
         })
 
+        if (!permissionsNotGranted()) {
+            getMyFragmentManager().loadFragment(getFragment(CameraFragment.TAG), CameraFragment.TAG)
+        }
+
+    }
+
+    fun initViewsAfterPermissionsGranted() {
+
         getMyFragmentManager().loadFragment(getFragment(CameraFragment.TAG), CameraFragment.TAG)
     }
 
@@ -85,6 +122,27 @@ class MainActivity : BaseMvpActivity<MainContract.Presenter>(), MainContract.Vie
 
     fun showMenuButton() {
         ivMenu.visibility = View.VISIBLE
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        when (requestCode) {
+            Constants.PERMISSIONS_CODE ->
+                if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.CAMERA)) {
+                    //denied
+                    finish()
+                } else {
+                    if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+                        //allowed
+
+                        initViewsAfterPermissionsGranted()
+                    } else {
+                        //set to never ask again
+                        finish()
+                    }
+                }
+        }
+
     }
 
     private fun getFragment(tag: String): Fragment? {
@@ -107,7 +165,7 @@ class MainActivity : BaseMvpActivity<MainContract.Presenter>(), MainContract.Vie
         return null
     }
 
-    override internal fun bindPresenter(): MainContract.Presenter {
+    override fun bindPresenter(): MainContract.Presenter {
         return MainPresenter(this)
     }
 
@@ -122,7 +180,7 @@ class MainActivity : BaseMvpActivity<MainContract.Presenter>(), MainContract.Vie
                 }
                 changeMenuItemColor(rlBuild)
 
-                getMyFragmentManager().hideFragment(GalleryFragment.TAG) // will consume device cpu but improve speed(compared to destroyFragment) when swithcing from fragments
+                getMyFragmentManager().destroyFragment(GalleryFragment.TAG) // will consume device cpu but improve speed(compared to destroyFragment) when swithcing from fragments
                 getMyFragmentManager().loadFragment(getFragment(CameraFragment.TAG), CameraFragment.TAG)
 
             }

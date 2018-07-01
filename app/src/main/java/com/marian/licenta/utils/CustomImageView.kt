@@ -77,8 +77,6 @@ class CustomImageView : RelativeLayout {
             if (this@CustomImageView.parent is RelativeLayout) {
                 (this@CustomImageView.parent as RelativeLayout).removeView(this@CustomImageView)
             }
-
-
             true
         }
 
@@ -111,7 +109,7 @@ class CustomImageView : RelativeLayout {
 
     fun showBorder() {
         hideAllBorders()
-        iv.background = ContextCompat.getDrawable(context, R.drawable.dotted_margin_background)
+        iv.background = ContextCompat.getDrawable(context, R.drawable.red_dotted_margin_background)
     }
 
     fun showOptions() {

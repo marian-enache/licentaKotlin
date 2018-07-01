@@ -12,16 +12,17 @@ import com.marian.licenta.extensions.createParcel
  * Created by Marian on 28.05.2018.
  */
 @Entity(tableName = "scenes")
-class Scene( @PrimaryKey(autoGenerate = false) var id : Long?,
-    @ColumnInfo var name : String,
-    @ColumnInfo(name = "layers_count") var layersCount : Int,
-    @ColumnInfo(name = "background_image") var backgroundImage : String,
-    @Ignore var layers: List<Layer>
-): Parcelable {
+class Scene(@PrimaryKey(autoGenerate = false) var id: Long?,
+            @ColumnInfo var name: String,
+            @ColumnInfo(name = "layers_count") var layersCount: Int,
+            @ColumnInfo(name = "background_image") var backgroundImage: String,
+            @ColumnInfo(name = "frame_margin_left") var frameMarginLeft: Int,
+            @ColumnInfo(name = "frame_margin_top") var frameMarginTop: Int,
+            @Ignore var layers: List<Layer>
+) : Parcelable {
 
 
-    constructor() : this(null, "", 0, "", listOf<Layer>())
-
+    constructor() : this(null, "", 0, "", 0, 0, listOf<Layer>())
 
 
     constructor(parcel: Parcel) : this(
@@ -29,9 +30,11 @@ class Scene( @PrimaryKey(autoGenerate = false) var id : Long?,
             parcel.readString(),
             parcel.readInt(),
             parcel.readString(),
-        mutableListOf<Layer>().apply {
-            parcel.readTypedList(this, Layer.CREATOR)
-        }
+            parcel.readInt(),
+            parcel.readInt(),
+            mutableListOf<Layer>().apply {
+                parcel.readTypedList(this, Layer.CREATOR)
+            }
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
@@ -39,6 +42,8 @@ class Scene( @PrimaryKey(autoGenerate = false) var id : Long?,
         parcel.writeString(name)
         parcel.writeInt(layersCount)
         parcel.writeString(backgroundImage)
+        parcel.writeInt(frameMarginLeft)
+        parcel.writeInt(frameMarginTop)
         parcel.writeTypedList(layers)
     }
 

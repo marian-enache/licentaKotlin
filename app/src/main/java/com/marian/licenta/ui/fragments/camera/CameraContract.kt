@@ -7,6 +7,7 @@ interface CameraContract {
 
     interface View : BaseMvpContract.MvpView {
         fun afterPictureTaken()
+        fun notifyAdaptorItemsChange()
 
     }
 
@@ -14,5 +15,6 @@ interface CameraContract {
         fun storeScene(name: String, layersCount: Int, layersList: MutableList<Layer>)
         fun initImageSavingThread()
         fun setImageData(imageData: ByteArray)
+        fun adapterItemsListInit()
     }
 }

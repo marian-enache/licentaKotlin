@@ -12,14 +12,12 @@ import com.marian.licenta.managers.MyFragmentManager
 /**
  * Created by Marian on 20.03.2018.
  */
-abstract class BaseMvpActivity<PRESENTER : BaseMvpContract.MvpPresenter> : AppCompatActivity(), BaseMvpContract.MvpView {
+abstract class BaseMvpActivity<out PRESENTER : BaseMvpContract.MvpPresenter>
+    : AppCompatActivity(), BaseMvpContract.MvpView {
 
     private lateinit var presenter : PRESENTER
-
     private lateinit var rlLoading : RelativeLayout
-
     private lateinit var myFragmentManager: MyFragmentManager
-
 
     override  fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,8 +49,8 @@ abstract class BaseMvpActivity<PRESENTER : BaseMvpContract.MvpPresenter> : AppCo
     }
 
     override fun onDestroy() {
-        super.onDestroy()
         presenter.onDetachView()
+        super.onDestroy()
     }
 
     override fun showProgress() {
@@ -70,4 +68,5 @@ abstract class BaseMvpActivity<PRESENTER : BaseMvpContract.MvpPresenter> : AppCo
     public fun getMyFragmentManager() : MyFragmentManager {
         return myFragmentManager
     }
+
 }

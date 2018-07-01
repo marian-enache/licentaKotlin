@@ -14,16 +14,17 @@ class GalleryFragment : BaseMvpFragment<GalleryContract.Presenter>(), GalleryCon
     companion object {
 
         @JvmStatic
-        open val TAG: String = GalleryFragment::class.java.simpleName
+        val TAG: String = GalleryFragment::class.java.simpleName
 
-        open fun newInstance(): GalleryFragment = GalleryFragment()
+        @JvmStatic
+        fun newInstance(): GalleryFragment = GalleryFragment()
 
     }
     private lateinit var rvScenes: RecyclerView
 
     private lateinit var scenesAdapter: ScenesAdapter
     @LayoutRes
-    override internal fun bindLayout(): Int {
+    override fun bindLayout(): Int {
         return R.layout.fragment_gallery
     }
 
@@ -37,22 +38,24 @@ class GalleryFragment : BaseMvpFragment<GalleryContract.Presenter>(), GalleryCon
         }
     }
 
-    override internal fun initViews(view: View?) {
+    override fun initViews(view: View?) {
         rvScenes = view?.findViewById(R.id.rvScenes)!!
 
         rvScenes.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         scenesAdapter = ScenesAdapter(getPresenter() as GalleryPresenter)
         scenesAdapter.callback = scenesAdapterCallback
         rvScenes.adapter = scenesAdapter
+
+        getPresenter().adapterItemsListInit()
     }
 
-    internal var scenesAdapterCallback = object : ScenesAdapter.Callback {
+    var scenesAdapterCallback = object : ScenesAdapter.Callback {
         override fun onClick() {
 
         }
     }
 
-    override internal fun bindPresenter(): GalleryContract.Presenter {
+    override fun bindPresenter(): GalleryContract.Presenter {
         return GalleryPresenter(this)
     }
 
